@@ -12,13 +12,13 @@ export default {
 </script>
 
 <template>
-    <div id="terminal_container">
+    <div class="terminal_container">
         <TerminalWindow ref="terminal_window"></TerminalWindow>
     </div>
 </template>
 
 <style scoped>
-#terminal_container {
+.terminal_container {
     display: flex;
     overflow: auto;
     background-color: #282828;
@@ -27,5 +27,6 @@ export default {
     padding: 10px;
     height: 100%;
     width: 100%;
+    box-sizing: border-box;
 }
 </style>

@@ -198,26 +198,27 @@ export default {
 </script>
 
 <template>
-    <div id="terminal_window" ref="terminal_window" @keydown="focus" tabindex="0">
+    <div class="terminal_window" ref="terminal_window" @keydown="focus" tabindex="0">
         <LogLine v-for="log_line in log_lines" :log_line :terminal_line_length></LogLine>
-        <LogLine ref="command_line" v-show="!logging" :log_line="command_line" :terminal_line_length :cursor_index>
-        </LogLine>
+        <div v-show="!logging">
+            <LogLine ref="command_line" :log_line="command_line" :terminal_line_length :cursor_index></LogLine>
+        </div>
     </div>
-    <input id="terminal_input" ref="terminal_input" v-model="command" @keydown.left.right="update_cursor_index"
+    <input class="terminal_input" ref="terminal_input" v-model="command" @keydown.left.right="update_cursor_index"
         @keydown.up.down="history" @keydown.enter="enter" @keydown.tab.prevent="tab" @keydown="keydown">
 </template>
 
 <style scoped>
-#terminal_window {
+.terminal_window {
     flex: 1;
     content: size;
     overflow-x: hidden;
     overflow-y: auto;
-    padding-right: 5px;
+    padding-right: 10px;
     height: 100%;
 }
 
-#terminal_input {
+.terminal_input {
     position: absolute;
     left: -9999px;
 }

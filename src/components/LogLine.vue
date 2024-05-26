@@ -71,12 +71,10 @@ export default {
 </script>
 
 <template>
-    <div>
-        <div class="log_line" v-for="line in lines">
-            <p class="clause" v-for="{ text, cls, style, click } in line" :class="cls" :style="style" @click="click">
-                {{ text }}
-            </p>
-        </div>
+    <div class="log_line" v-for="line in lines">
+        <p class="clause" v-for="{ text, cls, style, click } in line" :class="cls" :style="style" @click="click">
+            {{ text }}
+        </p>
     </div>
 </template>
 
