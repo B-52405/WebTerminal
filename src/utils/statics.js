@@ -9,6 +9,9 @@ const COLORS = Object.freeze({
     GRAY: "#282828"
 })
 
+const CHAR_WIDTH = 10.8
+
 export {
-    COLORS
+    COLORS,
+    CHAR_WIDTH
 }

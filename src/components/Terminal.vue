@@ -1,6 +1,5 @@
 <script>
 import TerminalWindow from "./TerminalWindow.vue"
-import { terminal_setting } from "../utils/terminal_setting.js"
 import {} from "../commands/color.js"
 import {} from "../commands/hello.js"
 import {} from "../commands/help.js"
@@ -8,32 +7,25 @@ import {} from "../commands/help.js"
 export default {
     components: {
         TerminalWindow
-    },
-    mounted() {
-        const container = this.$el.parentElement
-        Object.assign(container.style, {
-            display: "flex",
-            padding: "10px",
-            margin: 0,
-            "background-color": terminal_setting.background_color,
-            color: terminal_setting.font_color
-        })
-
-        // window.app = this
     }
 }
 </script>
 
 <template>
-    <div>
+    <div id="terminal_container">
         <TerminalWindow ref="terminal_window"></TerminalWindow>
     </div>
 </template>
 
 <style scoped>
-div {
+#terminal_container {
     display: flex;
-    flex: 1;
     overflow: auto;
+    background-color: #282828;
+    color: white;
+    margin: 0;
+    padding: 10px;
+    height: 100%;
+    width: 100%;
 }
 </style>

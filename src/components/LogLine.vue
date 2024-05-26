@@ -71,7 +71,7 @@ export default {
 </script>
 
 <template>
-    <div ref="container">
+    <div>
         <div class="log_line" v-for="line in lines">
             <p class="clause" v-for="{ text, cls, style, click } in line" :class="cls" :style="style" @click="click">
                 {{ text }}

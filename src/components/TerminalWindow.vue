@@ -4,10 +4,8 @@ import { Clause } from "../utils/clause.js"
 import { logger_line, init_logger } from '../utils/logger.js'
 import { commanding } from "../utils/commanding.js"
 import { is_non_empty_array } from "../utils/checker.js"
-import { COLORS } from "../utils/statics.js"
+import { COLORS, CHAR_WIDTH } from "../utils/statics.js"
 import { init_setting } from "../utils/terminal_setting.js"
-
-const char_width = 10.8
 
 export default {
     expose: [
@@ -94,12 +92,14 @@ export default {
                 if (this.command_history_index < this.command_history.length - 1) {
                     this.command_history_index++
                     this.command = this.command_history[this.command_history_index]
+                    this.cursor_to_end()
                 }
             }
             else if (event.key === "ArrowDown") {
                 if (this.command_history_index > 0) {
                     this.command_history_index--
                     this.command = this.command_history[this.command_history_index]
+                    this.cursor_to_end()
                 }
             }
         },
@@ -112,6 +112,14 @@ export default {
             }
             this.complete_index = (this.complete_index + 1) % this.complete_command.length
             this.command = this.complete_command[this.complete_index]
+
+            this.cursor_to_end()
+        },
+        cursor_to_end(){
+            setTimeout(()=>{
+                this.$refs.terminal_input.setSelectionRange(this.command.length, this.command.length)
+                this.cursor_index = 0
+            })
         },
         keydown(event) {
             if (event.key !== "Tab") {
@@ -172,7 +180,7 @@ export default {
                     this.terminal_width = entry.contentRect.width
                     this.terminal_height = entry.contentRect.height
 
-                    this.terminal_line_length = Math.floor(this.terminal_width / char_width)
+                    this.terminal_line_length = Math.floor(this.terminal_width / CHAR_WIDTH)
                 }
             }
         })
@@ -187,25 +195,26 @@ export default {
 </script>
 
 <template>
-    <div ref="terminal_window" @keydown="focus" tabindex="0">
+    <div id="terminal_window" ref="terminal_window" @keydown="focus" tabindex="0">
         <LogLine v-for="log_line in log_lines" :log_line :terminal_line_length></LogLine>
         <LogLine ref="command_line" v-show="!logging" :log_line="command_line" :terminal_line_length :cursor_index>
         </LogLine>
     </div>
-    <input ref="terminal_input" v-model="command" @keydown.left.right="update_cursor_index" @keydown.up.down="history"
+    <input id="terminal_input" ref="terminal_input" v-model="command" @keydown.left.right="update_cursor_index" @keydown.up.down="history"
         @keydown.enter="enter" @keydown.tab.prevent="tab" @keydown="keydown">
 </template>
 
 <style scoped>
-div {
+#terminal_window {
     flex: 1;
     content: size;
     overflow-x: hidden;
     overflow-y: auto;
     padding-right: 5px;
+    height: 100%;
 }
 
-input {
+#terminal_input {
     position: absolute;
     left: -9999px;
 }
