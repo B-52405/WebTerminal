@@ -1,6 +1,6 @@
 let terminal_setting = {
-    header: undefined,
-    header_visibility: undefined,
+    prompt: undefined,
+    prompt_visibility: undefined,
     background_color: undefined,
     font_color: undefined,
     logging_interval: undefined

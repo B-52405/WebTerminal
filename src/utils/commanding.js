@@ -58,7 +58,7 @@ class Commanding {
         const command_object = this.commands[command_split[0]]
         if (command_object === undefined) {
             logger_line("  No such command.")
-            return 
+            return
         }
         command_object.call(command_split.slice(1))
     }

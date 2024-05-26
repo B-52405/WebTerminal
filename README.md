@@ -43,7 +43,7 @@ npm install web-terminal
     <div id="web_terminal_app"></div>
     <script type="module">
         import { createApp } from 'vue'
-        import { Terminal } from '@web-terminal'
+        import { Terminal } from 'web-terminal'
 
         createApp(Terminal).mount("#web_terminal_app")
     </script>
@@ -61,7 +61,7 @@ WebTerminal 自带三个命令：`help`，`color` 和 `hello`。你可以使用 
 ### 使用 `Commanding`
 
 ```
-import { commanding } from "@web-terminal/utils/commanding"
+import { commanding } from "web-terminal/utils/commanding"
 
 commanding
     //命令名
@@ -107,7 +107,7 @@ Clause本质上是用于输出到终端的字符串片段，多个Clause共同�
 * Clause 基础功能
 
 ```
-import { Clause } from "@web-terminal/utils/clause"
+import { Clause } from "web-terminal/utils/clause"
 
 //命令行为函数示例
 function example_command_action(){
@@ -121,7 +121,7 @@ function example_command_action(){
 * 自定义 Clause
 
 ```
-import { Clause } from "@web-terminal/utils/clause"
+import { Clause } from "web-terminal/utils/clause"
 
 //命令行为函数示例
 function example_command_action(){
@@ -151,3 +151,23 @@ function example_command_action(){
 }
 ```
 
+# 终端设置
+
+终端本身的设置选项包括：
+* prompt：提示符
+* prompt_visibility：提示符可见性
+* background_color：终端背景颜色
+* font_color：字体颜色
+* logging_interval：打印每一行的时间间隔，单位：ms
+
+### 设置终端
+
+```
+import { terminal_setting } from "web-terminal/utils/terminal_setting"
+
+terminal_setting.prompt = "WebTermianl> "
+terminal_setting.prompt_visibility = true
+terminal_setting.background_color = "gray"
+terminal_setting.font_color = "white"
+terminal_setting.logging_interval = 24
+```

@@ -26,8 +26,8 @@ export default {
             command_history_index: -1,
             cursor_index: 0,
             setting: {
-                header: "WebTerminal> ",
-                header_visibility: true,
+                prompt: "WebTerminal> ",
+                prompt_visibility: true,
                 logging_interval: 24,
                 background_color: COLORS.GRAY,
                 font_color: COLORS.WHITE
@@ -42,7 +42,7 @@ export default {
     },
     methods: {
         scroll_to_bottom() {
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.$refs.terminal_window.scrollTop = this.$refs.terminal_window.scrollHeight
             })
         },
@@ -127,11 +127,11 @@ export default {
             })
         },
         focus(event) {
-            if(event){
-                if(event.key === "Control"){
+            if (event) {
+                if (event.key === "Control") {
                     return
                 }
-                if(event.ctrlKey && event.key === "c"){
+                if (event.ctrlKey && event.key === "c") {
                     return
                 }
             }
@@ -157,10 +157,10 @@ export default {
     },
     computed: {
         command_line() {
-            if(this.setting.header_visibility){
-                return [Clause(this.setting.header + this.command)]
+            if (this.setting.prompt_visibility) {
+                return [Clause(this.setting.prompt + this.command)]
             }
-            else{
+            else {
                 return [Clause(this.command)]
             }
         }
@@ -192,12 +192,8 @@ export default {
         <LogLine ref="command_line" v-show="!logging" :log_line="command_line" :terminal_line_length :cursor_index>
         </LogLine>
     </div>
-    <input ref="terminal_input" v-model="command" 
-        @keydown.left.right="update_cursor_index" 
-        @keydown.up.down="history"
-        @keydown.enter="enter" 
-        @keydown.tab.prevent="tab" 
-        @keydown="keydown">
+    <input ref="terminal_input" v-model="command" @keydown.left.right="update_cursor_index" @keydown.up.down="history"
+        @keydown.enter="enter" @keydown.tab.prevent="tab" @keydown="keydown">
 </template>
 
 <style scoped>

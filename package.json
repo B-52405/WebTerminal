@@ -1,6 +1,6 @@
 {
-    "name": "webcommand",
-    "private": true,
+    "name": "web-terminal",
+    "private": false,
     "version": "1.0.0",
     "type": "module",
     "scripts": {
