@@ -1,0 +1,1 @@
+import{c as m}from"./index-f07282cf.js";m.Command("help").Description("Provide help information for commands.").Param({name:"command",type:"String",description:"Name of the command"}).Action(o=>m.help(o));
