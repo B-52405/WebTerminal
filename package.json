@@ -4,14 +4,30 @@
     "version": "1.0.0",
     "author": "B-52405",
     "type": "module",
+    "keywords": [
+        "command",
+        "terminal",
+        "web",
+        "browser",
+        "vue",
+        "JavaScript"
+    ],
+    "exports": {
+        ".": {
+            "import": "./dist/webterminal.es.js",
+            "require": "./dist/webterminal.umd.js"
+        }
+    },
     "scripts": {
         "dev": "vite",
         "build": "vite build",
+        "page": "vite build --config vite.config.page.js",
         "preview": "vite preview"
     },
     "licenese": "MIT",
     "dependencies": {
         "clone-deep": "^4.0.1",
+        "path": "^0.12.7",
         "vue": "^3.2.47"
     },
     "devDependencies": {

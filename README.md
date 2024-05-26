@@ -1,4 +1,4 @@
-<img src="public/webterminal.png" alt="Description" style="display: block; margin: 0 auto; width: 200px;">
+<img src="./public/webterminal.png" alt="Description" style="display: block; margin: 0 auto; width: 200px;">
 
 # WebTerminal
 

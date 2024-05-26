@@ -1,6 +1,9 @@
 <script>
-import TerminalWindow from "./components/TerminalWindow.vue"
-import { terminal_setting } from "./utils/terminal_setting.js"
+import TerminalWindow from "./TerminalWindow.vue"
+import { terminal_setting } from "../utils/terminal_setting.js"
+import {} from "../commands/color.js"
+import {} from "../commands/hello.js"
+import {} from "../commands/help.js"
 
 export default {
     components: {
@@ -15,12 +18,6 @@ export default {
             "background-color": terminal_setting.background_color,
             color: terminal_setting.font_color
         })
-
-        //加载所有在commands文件夹中声明的命令
-        const modules = import.meta.glob("./commands/*.js")
-        for (const path in modules) {
-            modules[path]()
-        }
 
         // window.app = this
     }
