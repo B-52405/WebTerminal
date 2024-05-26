@@ -17,7 +17,7 @@ WebTerminal 是一个基于 Vue 编写的前端组件，可以在浏览器中实
 * 安装 WebTerminal :
 
 ```
-npm install web-terminal
+npm install webterminal
 ```
 
 * WebTerminal 像所有其他 Vue 组件一样使用。 一个简单示例:
@@ -43,7 +43,7 @@ npm install web-terminal
     <div id="web_terminal_app"></div>
     <script type="module">
         import { createApp } from 'vue'
-        import { Terminal } from 'web-terminal'
+        import { Terminal } from 'webterminal'
 
         createApp(Terminal).mount("#web_terminal_app")
     </script>
@@ -61,7 +61,7 @@ WebTerminal 自带三个命令：`help`，`color` 和 `hello`。你可以使用 
 ### 使用 `Commanding`
 
 ```
-import { commanding } from "web-terminal/utils/commanding"
+import { commanding } from "webterminal/utils/commanding"
 
 commanding
     //命令名
@@ -107,7 +107,7 @@ Clause本质上是用于输出到终端的字符串片段，多个Clause共同�
 * Clause 基础功能
 
 ```
-import { Clause } from "web-terminal/utils/clause"
+import { Clause } from "webterminal/utils/clause"
 
 //命令行为函数示例
 function example_command_action(){
@@ -121,7 +121,7 @@ function example_command_action(){
 * 自定义 Clause
 
 ```
-import { Clause } from "web-terminal/utils/clause"
+import { Clause } from "webterminal/utils/clause"
 
 //命令行为函数示例
 function example_command_action(){
@@ -163,7 +163,7 @@ function example_command_action(){
 ### 设置终端
 
 ```
-import { terminal_setting } from "web-terminal/utils/terminal_setting"
+import { terminal_setting } from "webterminal/utils/terminal_setting"
 
 terminal_setting.prompt = "WebTermianl> "
 terminal_setting.prompt_visibility = true
