@@ -164,11 +164,11 @@ function example_command_action(){
 ### 设置终端
 
 ```
-import { terminal_setting } from "@b52405/webterminal"
+import { setting } from "@b52405/webterminal"
 
-terminal_setting.prompt = "WebTermianl> "
-terminal_setting.prompt_visibility = true
-terminal_setting.background_color = "gray"
-terminal_setting.font_color = "white"
-terminal_setting.logging_interval = 24
+setting.prompt = "WebTermianl> "
+setting.prompt_visibility = true
+setting.background_color = "gray"
+setting.font_color = "white"
+setting.logging_interval = 24
 ```

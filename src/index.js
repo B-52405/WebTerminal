@@ -5,5 +5,5 @@ import { terminal_setting } from "./utils/terminal_setting.js"
 export {
     Terminal,
     commanding,
-    terminal_setting
+    terminal_setting as setting
 }

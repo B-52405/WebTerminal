@@ -4,25 +4,7 @@ import { is_generator, is_non_empty_array, is_non_empty_object } from "./checker
 import { guarantor } from "./guarantor.js"
 
 class Commanding {
-    name = ""
-    banner = []
-    description = ""
     commands = {}
-
-    Name(name) {
-        this.name = name
-        return this
-    }
-
-    Banner(banner) {
-        this.banner = banner
-        return this
-    }
-
-    Description(description) {
-        this.description = description
-        return this
-    }
 
     Command(command_name) {
         const command = new Command(command_name)
@@ -57,7 +39,7 @@ class Commanding {
         }
         const command_object = this.commands[command_split[0]]
         if (command_object === undefined) {
-            logger_line("  No such command.")
+            logger_sync(["", "  No such command.", "  Try 'help' for assistance.", ""])
             return
         }
         command_object.call(command_split.slice(1))
@@ -65,23 +47,24 @@ class Commanding {
 
     help(command_name) {
         if (command_name === undefined) {
-            const result = ["Commands:", ""]
+            const result = ["", "Commands:"]
             for (const name in this.commands) {
                 const command = this.commands[name]
                 let line = `  ${command.name}`
-                line += " ".repeat(help_padding - line.length) + command.description
+                line += " ".repeat(description_padding - line.length) + command.description
                 result.push(line)
             }
             result.push("")
             return result
         }
         if (!(command_name in this.commands)) {
-            return "  No such command."
+            return ["", "  No such command.", ""]
         }
-        const result = []
+        const result = [""]
         const command = this.commands[command_name]
         if (command.description !== undefined) {
-            result.push(`Description: ${command.description}`)
+            result.push("Description:")
+            result.push(`  ${command.description}`)
             result.push("")
         }
         if (is_non_empty_object(command.params)) {
@@ -89,7 +72,8 @@ class Commanding {
             for (const name in command.params) {
                 const param = command.params[name]
                 let line = `  ${param.name}`
-                line += " ".repeat(help_padding - line.length) + param.description
+                line += " ".repeat(type_padding - line.length) + param.type
+                line += " ".repeat(description_padding - line.length) + param.description
                 if (param.default !== undefined) {
                     line += `(default: ${JSON.stringify(param.default)})`
                 }
@@ -106,12 +90,17 @@ class Commanding {
                     line += `-${option.short}, `
                 }
                 line += `--${option.name}`
-                line += " ".repeat(26 - line.length) + option.description
+                line += " ".repeat(type_padding - line.length) + option.type
+                line += " ".repeat(description_padding - line.length) + option.description
                 if (option.default !== undefined) {
                     line += `(default: ${JSON.stringify(option.default)})`
                 }
                 result.push(line)
             }
+            result.push("")
+        }
+        if (result.length === 0) {
+            result.push("No description, no parama, no options, nothing.")
             result.push("")
         }
         return result
@@ -236,7 +225,8 @@ class Command {
     }
 }
 
-const help_padding = 26
+const type_padding = 18
+const description_padding = 28
 
 const converters = {
     "Number": parseInt,

@@ -20,9 +20,11 @@ export default {
             log_buffer: [],
             logging: false,
             command: "",
+            cursor_index: 0,
             command_history: [],
             command_history_index: -1,
-            cursor_index: 0,
+            complete_command: [],
+            complete_index: -1,
             setting: {
                 prompt: "WebTerminal> ",
                 prompt_visibility: true,
@@ -30,8 +32,6 @@ export default {
                 background_color: COLORS.GRAY,
                 font_color: COLORS.WHITE
             },
-            complete_command: [],
-            complete_index: -1,
 
             terminal_width: undefined,
             terminal_height: undefined,
@@ -83,8 +83,11 @@ export default {
             }
             logger_line(this.command_line)
             commanding.execute(this.command)
+
+            this.cursor_index = 0
             this.command_history.unshift(this.command)
             this.command_history_index = -1
+
             this.$nextTick(() => { this.command = "" })
         },
         history(event) {
@@ -115,8 +118,8 @@ export default {
 
             this.cursor_to_end()
         },
-        cursor_to_end(){
-            setTimeout(()=>{
+        cursor_to_end() {
+            setTimeout(() => {
                 this.$refs.terminal_input.setSelectionRange(this.command.length, this.command.length)
                 this.cursor_index = 0
             })
@@ -200,8 +203,8 @@ export default {
         <LogLine ref="command_line" v-show="!logging" :log_line="command_line" :terminal_line_length :cursor_index>
         </LogLine>
     </div>
-    <input id="terminal_input" ref="terminal_input" v-model="command" @keydown.left.right="update_cursor_index" @keydown.up.down="history"
-        @keydown.enter="enter" @keydown.tab.prevent="tab" @keydown="keydown">
+    <input id="terminal_input" ref="terminal_input" v-model="command" @keydown.left.right="update_cursor_index"
+        @keydown.up.down="history" @keydown.enter="enter" @keydown.tab.prevent="tab" @keydown="keydown">
 </template>
 
 <style scoped>
