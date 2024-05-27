@@ -3,7 +3,10 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [
+        vue(),
+        replaceVueWithCDN()
+    ],
     build: {
         lib: {
             entry: path.resolve(__dirname, 'src/index.js'),
@@ -21,3 +24,19 @@ export default defineConfig({
         }
     }
 })
+
+function replaceVueWithCDN() {
+    return {
+        name: 'replace-vue-with-cdn',
+        generateBundle(options, bundle) {
+            for (const file of Object.values(bundle)) {
+                if (file.type === 'chunk' && file.code) {
+                    file.code = file.code.replace(
+                        /import\s+\{([^}]+)\}\s+from\s+['"]vue['"]/g,
+                        `import { $1 } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js'`
+                    )
+                }
+            }
+        }
+    }
+}
