@@ -1,5 +1,5 @@
 <div style="display: flex; height: 200px; justify-content: center; align-items: center;">
-    <img src="./dist/webterminal.png" alt="Description" style="margin: 0; height: 100%">
+    <img src="./public/webterminal.png" alt="Description" style="margin: 0; height: 100%">
 </div>
 
 # WebTerminal
