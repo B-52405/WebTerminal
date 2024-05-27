@@ -1,6 +1,4 @@
-<div style="display: flex; height: 200px; justify-content: center; align-items: center;">
-    <img src="./public/webterminal.png" alt="Description" style="margin: 0; height: 100%">
-</div>
+<img src="https://unpkg.com/@b52405/webterminal/dist/webterminal.png" alt="Description" style="height: 200px">
 
 # WebTerminal
 
