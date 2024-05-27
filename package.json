@@ -1,7 +1,7 @@
 {
     "name": "@b52405/webterminal",
     "description": "一个基于 Vue 编写的前端组件，可以在浏览器中实现一个终端程序",
-    "version": "1.0.6",
+    "version": "1.0.0",
     "author": "B-52405",
     "type": "module",
     "main": "dist/webterminal.umd.js",
