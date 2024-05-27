@@ -46,7 +46,8 @@ createApp(Terminal).mount('#web_terminal_app')
 
 <head>
     <title>Web Terminal</title>
-    <link rel="stylesheet" href="https://unpkg.com/@b52405/webterminal@1.1.0/dist/style.css">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://unpkg.com/@b52405/webterminal/dist/webterminal.png">
+    <link rel="stylesheet" href="https://unpkg.com/@b52405/webterminal/dist/style.css">
     <style>
         body {
             margin: 0;
@@ -62,8 +63,7 @@ createApp(Terminal).mount('#web_terminal_app')
     <div id="web_terminal_app"></div>
     <script type="module">
         import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js'
-        import { Terminal } from 'https://unpkg.com/@b52405/webterminal@1.1.0/dist/webterminal.es.js'
-        import "@b52405/webterminal/dist/style.css"
+        import { Terminal, commanding } from 'https://unpkg.com/@b52405/webterminal/dist/webterminal.es.js'
 
         commanding
             .Command("hello")
