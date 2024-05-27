@@ -1,4 +1,6 @@
-<img src="./dist/webterminal.png" alt="Description" style="display: block; margin: 0 auto; width: 200px;">
+<div style="display: flex; height: 200px; justify-content: center; align-items: center;">
+    <img src="./dist/webterminal.png" alt="Description" style="margin: 0; height: 100%">
+</div>
 
 # WebTerminal
 
@@ -17,10 +19,26 @@ WebTerminal 是一个基于 Vue 编写的前端组件，可以在浏览器中实
 * 安装 WebTerminal :
 
 ```
-npm install webterminal
+// npm
+npm install @b52405/webterminal
+
+// yarn
+yarn add @b52405/webterminal
+
+// ES6 见下方示例
 ```
 
-* WebTerminal 像所有其他 Vue 组件一样使用。 一个简单示例:
+* WebTerminal 像所有其他 Vue 组件一样使用。 
+
+```
+import { createApp } from 'vue'
+import { Terminal } from "@b52405/webterminal"
+import "@b52405/webterminal/dist/style.css"
+
+createApp(Terminal).mount('#web_terminal_app')
+```
+
+* 也可以通过CDN方式引入:
 
 ```
 <!DOCTYPE html>
@@ -28,6 +46,7 @@ npm install webterminal
 
 <head>
     <title>Web Terminal</title>
+    <link rel="stylesheet" href="https://unpkg.com/@b52405/webterminal@1.1.0/dist/style.css">
     <style>
         body {
             margin: 0;
@@ -42,9 +61,19 @@ npm install webterminal
 <body>
     <div id="web_terminal_app"></div>
     <script type="module">
-        import { createApp } from 'vue'
-        import { Terminal } from "@b52405/webterminal"
+        import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js'
+        import { Terminal } from 'https://unpkg.com/@b52405/webterminal@1.1.0/dist/webterminal.es.js'
         import "@b52405/webterminal/dist/style.css"
+
+        commanding
+            .Command("hello")
+            .Description("Say hello to the world.")
+            .Param({ name: "name", type: "String", default: "world", description: "Say hello to who." })
+            .Option({ name: "ending", type: "String", default: "!", short: "e", description: "Punctuation." })
+            .Option({ name: "hide", type: "Boolean", short: "s", description: "Whether to display punctuation marks." })
+            .Action((name, ending, hide) => {
+                return `hello ${name}${(!hide) ? ending : ""}`
+            })
 
         createApp(Terminal).mount("#web_terminal_app")
     </script>
@@ -55,7 +84,11 @@ npm install webterminal
 
 # 定义自己的命令
 
-WebTerminal 自带三个命令：`help`，`color` 和 `hello`。你可以使用 `help` 命令查看他们的用法。
+WebTerminal 自带两个命令：`help` 和 `color`。你可以使用 `help` 命令查看他们的用法。例如:
+
+```
+WebTerminal> help color
+```
 
 显然，原生命令的功能极其有限，因而需要用户自定义命令。上文提到的 `commanding` 提供了足够普通需求使用的自定义选项。
 
@@ -95,6 +128,10 @@ commanding
         return `hello ${name}${show ? ending : ""}`
     })
 
+commanding
+    //删除命令
+    .Remove("hello")
+    .Remove("color")
 ```
 
 # 定义命令的输出
