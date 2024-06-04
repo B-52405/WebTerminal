@@ -1,9 +1,8 @@
 import cloneDeep from "clone-deep"
-import { logger, logger_line, logger_sync } from "./logger.js"
-import { is_generator, is_non_empty_array, is_non_empty_object } from "./checker.js"
-import { guarantor } from "./guarantor.js"
+import { guarantor } from "./guarantor"
+import { terminal } from "./terminal"
 
-class Commanding {
+class Commander {
     commands = {}
 
     Command(command_name) {
@@ -32,78 +31,19 @@ class Commanding {
         }
     }
 
-    execute(command) {
+    async execute(command) {
         const command_split = this.#split(command)
         if (command_split.length === 0) {
             return
         }
         const command_object = this.commands[command_split[0]]
         if (command_object === undefined) {
-            logger_sync(["", "  No such command.", "  Try 'help' for assistance.", ""])
-            return
+            terminal.log("", "  No such command.", "  Try 'help' for assistance.", "")
         }
-        command_object.call(command_split.slice(1))
-    }
-
-    help(command_name) {
-        if (command_name === undefined) {
-            const result = ["", "Commands:"]
-            for (const name in this.commands) {
-                const command = this.commands[name]
-                let line = `  ${command.name}`
-                line += " ".repeat(description_padding - line.length) + command.description
-                result.push(line)
-            }
-            result.push("")
-            return result
+        else {
+            await command_object.call(command_split.slice(1))
         }
-        if (!(command_name in this.commands)) {
-            return ["", "  No such command.", ""]
-        }
-        const result = [""]
-        const command = this.commands[command_name]
-        if (command.description !== undefined) {
-            result.push("Description:")
-            result.push(`  ${command.description}`)
-            result.push("")
-        }
-        if (is_non_empty_object(command.params)) {
-            result.push("Params:")
-            for (const name in command.params) {
-                const param = command.params[name]
-                let line = `  ${param.name}`
-                line += " ".repeat(type_padding - line.length) + param.type
-                line += " ".repeat(description_padding - line.length) + param.description
-                if (param.default !== undefined) {
-                    line += `(default: ${JSON.stringify(param.default)})`
-                }
-                result.push(line)
-            }
-            result.push("")
-        }
-        if (is_non_empty_object(command.options)) {
-            result.push("Options:")
-            for (const name in command.options) {
-                const option = command.options[name]
-                let line = "  "
-                if ("short" in option) {
-                    line += `-${option.short}, `
-                }
-                line += `--${option.name}`
-                line += " ".repeat(type_padding - line.length) + option.type
-                line += " ".repeat(description_padding - line.length) + option.description
-                if (option.default !== undefined) {
-                    line += `(default: ${JSON.stringify(option.default)})`
-                }
-                result.push(line)
-            }
-            result.push("")
-        }
-        if (result.length === 0) {
-            result.push("No description, no parama, no options, nothing.")
-            result.push("")
-        }
-        return result
+        terminal.finish()
     }
 
     #split(command) {
@@ -113,10 +53,11 @@ class Commanding {
 
 class Command {
     name
-    action
     description
     params = {}
     options = {}
+
+    #action
     #param_index = []
     #option_index = {}
     #boolean_option = []
@@ -136,7 +77,7 @@ class Command {
     }
 
     Action(action) {
-        this.action = action
+        this.#action = action
         return this
     }
 
@@ -178,7 +119,7 @@ class Command {
         return this
     }
 
-    call(params_and_options) {
+    async call(params_and_options) {
         const args = cloneDeep(this.#default_args)
 
         let param_count = 0
@@ -197,7 +138,7 @@ class Command {
             }
             else {
                 if (param_count === this.#param_index.length) {
-                    logger_line("error: too many parameters")
+                    terminal.log("", "  error: too many parameters", "")
                     return
                 }
                 else {
@@ -208,25 +149,9 @@ class Command {
             }
         }
 
-        //允许用户程序的输出是以下任意一种：
-        //1. 返回string的生成器返回值
-        //2. 非空string数组
-        //3. string
-        const result = this.action(...args)
-        if (is_generator(result)) {
-            logger(result)
-        }
-        else if (is_non_empty_array(result)) {
-            logger_sync(result)
-        }
-        else if (typeof result === "string") {
-            logger_line(result)
-        }
+        await this.#action(...args)
     }
 }
-
-const type_padding = 18
-const description_padding = 28
 
 const converters = {
     "Number": parseInt,
@@ -236,8 +161,8 @@ const converters = {
 
 const guarant_description = guarantor({ description: "" })
 
-const commanding = new Commanding()
+const commander = new Commander()
 
 export {
-    commanding
+    commander as Commander
 }

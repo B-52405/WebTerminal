@@ -1,11 +1,11 @@
 import Terminal from "./components/Terminal.vue"
-import { commanding } from "./utils/commanding.js"
-import { Clause } from "./utils/clause.js"
-import { terminal_setting } from "./utils/terminal_setting.js"
+import { Commander } from "./utils/commander"
+import { Clause } from "./utils/clause"
+import { terminal } from "./utils/terminal"
 
 export {
     Terminal,
-    commanding,
+    Commander,
     Clause,
-    terminal_setting as setting
+    terminal
 }

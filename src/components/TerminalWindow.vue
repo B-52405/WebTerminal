@@ -1,11 +1,10 @@
 <script>
 import LogLine from "./LogLine.vue"
-import { Clause } from "../utils/clause.js"
-import { logger_line, init_logger } from '../utils/logger.js'
-import { commanding } from "../utils/commanding.js"
-import { is_non_empty_array } from "../utils/checker.js"
-import { COLORS, CHAR_WIDTH } from "../utils/statics.js"
-import { init_setting } from "../utils/terminal_setting.js"
+import { Clause } from "../utils/clause"
+import { Commander } from "../utils/commander"
+import { is_non_empty_array } from "../utils/checker"
+import { COLORS, CHAR_WIDTH } from "../utils/statics"
+import { init_terminal, terminal } from "../utils/terminal"
 
 export default {
     expose: [
@@ -16,11 +15,15 @@ export default {
     },
     data() {
         return {
+            logging: false,
             log_lines: [],
             log_buffer: [],
-            logging: false,
-            command: "",
+            log_resolvers: [],
+            inputting: false,
+            input_prompt: "",
+            input_resolver: () => undefined,
             cursor_index: 0,
+            command: "",
             command_history: [],
             command_history_index: -1,
             complete_command: [],
@@ -39,76 +42,118 @@ export default {
         }
     },
     methods: {
-        scroll_to_bottom() {
-            setTimeout(() => {
-                this.$refs.terminal_window.scrollTop = this.$refs.terminal_window.scrollHeight
-            })
-        },
-        log_to_buffer(line) {
-            if (typeof line === "string") {
-                this.log_buffer.push([Clause(line)])
-            }
-            else if (is_non_empty_array(line)) {
-                for (let i = 0; i < line.length; i++) {
-                    if (typeof line[i] === "string") {
-                        line[i] = Clause(line[i])
+        to_log_line(line) {
+            if (is_non_empty_array(line)) {
+                const result = []
+                line.forEach(clause => {
+                    if (clause instanceof Clause) {
+                        result.push(clause)
                     }
-                }
-                this.log_buffer.push(line)
+                    else if(typeof clause === "string"){
+                        result.push(new Clause(clause))
+                    }
+                    else {
+                        result.push(new Clause(JSON.stringify(clause)))
+                    }
+                })
+                return result
             }
-
-            if (this.log_buffer.length > 0 && !this.logging) {
-                this.logging = true
-                this.buffer_to_log()
+            else if (typeof line === "string") {
+                return [new Clause(line)]
+            }
+            else {
+                return [new Clause(JSON.stringify(line))]
             }
         },
-        //buffer_to_log不一直循环的理由是：
-        //如果一直循环，每次输入的时候第一行就会有延迟
-        async buffer_to_log() {
-            this.scroll_to_bottom()
-            if (this.log_buffer.length === 0) {
-                this.logging = false
-                return
+        log_to_buffer() {
+            if (this.logging) {
+                for (const line of arguments) {
+                    this.log_buffer.push(this.to_log_line(line))
+                }
             }
-
+        },
+        buffer_to_log() {
             if (this.log_buffer.length > 0) {
                 this.log_lines.push(this.log_buffer.shift())
+                this.scroll_to_bottom()
+                setTimeout(this.buffer_to_log, this.setting.logging_interval)
             }
-
-            setTimeout(this.buffer_to_log, this.setting.logging_interval)
+            else {
+                if (this.log_resolvers.length > 0) {
+                    this.log_resolvers.shift()()
+                }
+                setTimeout(this.buffer_to_log, 1)
+            }
+        },
+        async await_logging() {
+            await new Promise(resolver => {
+                this.log_resolvers.push(resolver)
+            })
+        },
+        async logging_finish() {
+            await this.await_logging()
+            this.logging = false
         },
         enter() {
             if (this.logging) {
-                return
+                if (!this.inputting) {
+                    return
+                }
+
+                //inputting
+                terminal.log(this.input_line)
+                this.input_resolver(this.command)
+                this.inputting = false
+                this.input_prompt = ""
+                this.input_resolver = () => undefined
+                this.$nextTick(this.reset)
             }
-            logger_line(this.command_line)
-            commanding.execute(this.command)
+            else {
+                this.logging = true
+                terminal.log(this.command_line)
+                this.command_history.unshift(this.command)
+                Commander.execute(this.command)
+                this.$nextTick(this.reset)
+            }
+        },
+        async input(prompt) {
+            await this.await_logging()
+            this.inputting = true
+            this.input_prompt = prompt
 
-            this.cursor_index = 0
-            this.command_history.unshift(this.command)
-            this.command_history_index = -1
+            this.reset()
 
-            this.$nextTick(() => { this.command = "" })
+            return await new Promise(resolver => {
+                this.input_resolver = resolver
+            })
         },
         history(event) {
             if (event.key === "ArrowUp") {
                 if (this.command_history_index < this.command_history.length - 1) {
                     this.command_history_index++
                     this.command = this.command_history[this.command_history_index]
-                    this.cursor_to_end()
                 }
+                this.cursor_to_end()
             }
             else if (event.key === "ArrowDown") {
                 if (this.command_history_index > 0) {
                     this.command_history_index--
                     this.command = this.command_history[this.command_history_index]
-                    this.cursor_to_end()
                 }
+                else if (this.command_history_index === 0) {
+                    this.command_history_index--
+                    this.command = ""
+                }
+                this.cursor_to_end()
             }
         },
         tab() {
+            if (this.logging || this.inputting) {
+                return
+            }
+
             if (this.complete_index === -1) {
-                this.complete_command = commanding.complete(this.command)
+                this.complete_command = Commander.complete(this.command)
             }
             if (this.complete_command.length === 0) {
                 return
@@ -124,6 +169,12 @@ export default {
                 this.cursor_index = 0
             })
         },
+        reset() {
+            this.command = ""
+            this.cursor_index = 0
+            this.command_history_index = -1
+            this.complete_index = -1
+        },
         keydown(event) {
             if (event.key !== "Tab") {
                 this.complete_command = []
@@ -137,7 +188,13 @@ export default {
                 this.cursor_index = terminal_input.value.length - terminal_input.selectionEnd
             })
         },
+        scroll_to_bottom() {
+            setTimeout(() => {
+                this.$refs.terminal_window.scrollTop = this.$refs.terminal_window.scrollHeight
+            })
+        },
         focus(event) {
+            //允许Ctrl+C
             if (event) {
                 if (event.key === "Control") {
                     return
@@ -146,6 +203,7 @@ export default {
                     return
                 }
             }
+
             this.$nextTick(() => {
                 this.$refs.terminal_input.focus()
             })
@@ -159,7 +217,6 @@ export default {
             })
         },
         "setting.font_color": function (new_value) {
-            console.log("font_color", new_value)
             const container = this.$el.parentElement
             Object.assign(container.style, {
                 "color": new_value
@@ -169,11 +226,16 @@ export default {
     computed: {
         command_line() {
             if (this.setting.prompt_visibility) {
-                return [Clause(this.setting.prompt + this.command)]
+                const prompt = this.to_log_line(this.setting.prompt)
+                return [...prompt, new Clause(this.command)]
             }
             else {
-                return [Clause(this.command)]
+                return [new Clause(this.command)]
             }
+        },
+        input_line() {
+            const prompt = this.to_log_line(this.to_log_line(this.input_prompt))
+            return [...prompt, new Clause(this.command)]
         }
     },
     mounted() {
@@ -188,9 +250,9 @@ export default {
             }
         })
         this.resize_observer.observe(this.$refs.terminal_window)
-        init_logger(this.log_to_buffer)
-        init_setting(this.setting)
+        init_terminal(this.setting, this.input, this.log_to_buffer, this.logging_finish)
         this.focus()
+        this.buffer_to_log()
 
         // window.terminal_window = this
     }
@@ -200,6 +262,9 @@ export default {
 <template>
     <div class="terminal_window" ref="terminal_window" @keydown="focus" tabindex="0">
         <LogLine v-for="log_line in log_lines" :log_line :terminal_line_length></LogLine>
+        <div v-show="inputting">
+            <LogLine ref="input_line" :log_line="input_line" :terminal_line_length :cursor_index></LogLine>
+        </div>
         <div v-show="!logging">
             <LogLine ref="command_line" :log_line="command_line" :terminal_line_length :cursor_index></LogLine>
         </div>

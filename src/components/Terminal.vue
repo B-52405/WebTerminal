@@ -1,7 +1,7 @@
 <script>
 import TerminalWindow from "./TerminalWindow.vue"
-import { } from "../commands/color.js"
-import { } from "../commands/help.js"
+import { } from "../commands/color"
+import { } from "../commands/help"
 
 export default {
     components: {

@@ -1,5 +1,5 @@
 <script>
-import { Clause } from "../utils/clause.js";
+import { Clause } from "../utils/clause"
 
 export default {
     props: {
@@ -40,7 +40,7 @@ export default {
             }
             else if (this.cursor_index === 0) {
                 const last_line = lines[lines.length - 1]
-                const cursor = Clause(" ").Cls("cursor")
+                const cursor = new Clause(" ").Cls("cursor")
                 last_line.push(cursor)
                 return lines
             }
@@ -94,6 +94,10 @@ export default {
     box-sizing: border-box;
     display: inline-block;
 }
+
+/* .clickable {
+    
+} */
 
 .cursor {
     animation: blink 1s infinite;

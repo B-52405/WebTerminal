@@ -1,24 +1,24 @@
-import { commanding } from "../utils/commanding"
-import { terminal_setting } from "../utils/terminal_setting"
+import { Commander } from "../utils/commander"
+import { terminal } from "../utils/terminal"
 import { COLORS } from "../utils/statics"
 
-commanding
+Commander
     .Command("color")
     .Description("Set the console background and font color.")
-    .Option({ name: "background", type: "String", default: "gray", short: "b", description: "Set background color." })
+    .Option({ name: "background", type: "String", default: "default", short: "b", description: "Set background color." })
     .Option({ name: "font", type: "String", default: "white", short: "f", description: "Set font color." })
     .Action((background, font) => {
         if (background.toUpperCase() in COLORS) {
-            terminal_setting.background_color = COLORS[background.toUpperCase()]
+            terminal.setting.background_color = COLORS[background.toUpperCase()]
         }
         else {
-            terminal_setting.background_color = background
+            terminal.setting.background_color = background
         }
 
         if (font.toUpperCase() in COLORS) {
-            terminal_setting.font_color = COLORS[font.toUpperCase()]
+            terminal.setting.font_color = COLORS[font.toUpperCase()]
         }
         else {
-            terminal_setting.font_color = font
+            terminal.setting.font_color = font
         }
     })

@@ -6,7 +6,7 @@ const COLORS = Object.freeze({
     YELLOW: "yellow",
     WHITE: "white",
     ORANGR: "orange",
-    GRAY: "#282828"
+    DEFAULT: "#282828"
 })
 
 const CHAR_WIDTH = 10.8

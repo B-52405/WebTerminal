@@ -1,5 +1,5 @@
 import cloneDeep from "clone-deep"
-import { COLORS } from "./statics.js"
+import { COLORS } from "./statics"
 
 class Clause {
     text = ""
@@ -11,6 +11,13 @@ class Clause {
         if (arguments.length > 0) {
             this.text = arguments[0]
         }
+        if (arguments.length > 1) {
+            this.cls = arguments[1]
+        }
+        if (arguments.length > 2) {
+            this.style = arguments[2]
+        }
+        this.click = arguments[3]
     }
 
     Text(text) {
@@ -40,6 +47,14 @@ class Clause {
 
     Click(click) {
         this.click = click
+        if(this.click === undefined){
+            if(this.style["cursor"] === "pointer"){
+                delete this.style["cursor"]
+            }
+        }
+        else{
+            this.style["cursor"] = "pointer"
+        }
         return this
     }
 
@@ -48,11 +63,11 @@ class Clause {
     }
 
     copy() {
-        return new Clause()
-            .Text(this.text)
-            .Clss(cloneDeep(this.cls))
-            .Style(cloneDeep(this.style))
-            .Click(this.click)
+        return new Clause(
+            this.text,
+            cloneDeep(this.cls),
+            cloneDeep(this.style),
+            this.click)
     }
 
     slice(begin, end) {
@@ -84,13 +99,6 @@ class Clause {
     }
 }
 
-function clause() {
-    if (arguments.length === 0) {
-        return new Clause()
-    }
-    return new Clause().Text(arguments[0])
-}
-
 export {
-    clause as Clause
+    Clause
 }
