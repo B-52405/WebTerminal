@@ -5,7 +5,7 @@ import { COLORS } from "../utils/statics"
 Commander
     .Command("color")
     .Description("Set the console background and font color.")
-    .Option({ name: "background", type: "String", default: "default", short: "b", description: "Set background color." })
+    .Option({ name: "background", type: "String", default: "background", short: "b", description: "Set background color." })
     .Option({ name: "font", type: "String", default: "white", short: "f", description: "Set font color." })
     .Action((background, font) => {
         if (background.toUpperCase() in COLORS) {

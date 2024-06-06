@@ -83,7 +83,7 @@ createApp(Terminal).mount('#web_terminal_app')
 
 # 定义自己的命令
 
-WebTerminal 自带两个命令：`help` 和 `color`。你可以使用 `help` 命令查看他们的用法。例如:
+WebTerminal 自带三个命令：`help` , `clear` 和 `color`。你可以使用 `help` 命令查看他们的用法。例如:
 
 ```
 WebTerminal> help color
@@ -151,9 +151,9 @@ async function example_command_action() {
     terminal.log({ data: "something" })
 
     //此外WebTerminal还提供了一个terminal.finish接口，用于主动结束打印并将控制权交还给终端
-    //这一接口的唯一推荐使用场景是：
+    //这一接口的推荐使用场景是：
     //命令行为函数可以在所有输出都已经结束，但还需要执行复杂计算等耗时操作时，主动调用terminal.finish
-    //终端会拒绝命令行为函数在调用terminal.finish之后的所有terminal.log
+    //WebTerminal会拒绝terminal.finish之后的所有terminal.log
     terminal.finish()
 
     //不产生输出的耗时操作放在terminal.finish之后
@@ -173,9 +173,9 @@ import { terminal, Clause } from "@b52405/webterminal"
 //命令行为函数示例
 function example_command_action(){
     //等价于 return "hello world!"
-    //等价于 return [Clause("hello "), Clause("world!")]
-    //等价于 return [Clause("hello world!")]
-    terminal.log([Clause("hello"), " ", Clause("world")])
+    //等价于 return [new Clause("hello "), new Clause("world!")]
+    //等价于 return [new Clause("hello world!")]
+    terminal.log([new Clause("hello"), " ", new Clause("world")])
 }
 ```
 
@@ -186,7 +186,7 @@ import { terminal, Clause } from "@b52405/webterminal"
 
 //命令行为函数示例
 function example_command_action() {
-    const clause = Clause("hello")
+    const clause = new Clause("hello")
         //为文本添加一个css类
         .Cls("example_css_class")
 
@@ -208,7 +208,24 @@ function example_command_action() {
 
     //命令的行为函数的返回值不能是单个Clause，可以是Clause数组
     //对于终端来说，Clause数组相当于一个string
-    termianl.log([clause])
+    terminal.log([clause])
+}
+
+function example_command_action2() {
+
+    //Clause自带三种预设
+    //分别是Warning，Error和Button
+    //三种预设分别表现为橙色，红色和浅绿色按钮
+    const warning = new Clause("warning").Warning()
+    const error = new Clause("error").Error()
+    const button = new Clause("button").Button(
+        //Button预设需要将一个Clause被点击时的处理函数作为参数
+        () => { console.log("click button") }
+    )
+
+    //命令的行为函数的返回值不能是单个Clause，可以是Clause数组
+    //对于终端来说，Clause数组相当于一个string
+    terminal.log([warning, error, button])
 }
 ```
 
@@ -220,17 +237,21 @@ function example_command_action() {
 * background_color：终端背景颜色
 * font_color：字体颜色
 * logging_interval：打印每一行的时间间隔，单位：ms
+* mounted：终端加载后自动调用的回调函数
+* banner: 终端加载后自动打印的内容
 
 ### 设置终端
 
 ```JavaScript
 import { terminal } from "@b52405/webterminal"
 
-terminal.setting.prompt = "WebTermianl> "
+terminal.setting.prompt = "WebTerminal> "
 terminal.setting.prompt_visibility = true
 terminal.setting.background_color = "gray"
 terminal.setting.font_color = "white"
 terminal.setting.logging_interval = 24
+terminal.setting.mounted = () => { console.log("Terminal is ready.") }
+terminal.setting.banner = ["Welcome to WebTerminal.", " "]
 ```
 
 # 读取用户输入

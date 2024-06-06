@@ -9,7 +9,7 @@ Commander
     .Description("Provide help information for commands.")
     .Param({ name: "command", type: "String", description: "Name of the command." })
     .Action((command_name) => {
-        const result = [""]
+        const result = [" "]
 
         if (command_name === undefined) {
             result.push("Commands:")
@@ -19,13 +19,13 @@ Commander
                 line += " ".repeat(description_padding - line.length) + command.description
                 result.push(line)
             }
-            result.push("")
+            result.push(" ")
             terminal.log(...result)
             return
         }
 
         if (!(command_name in Commander.commands)) {
-            result.push("  No such command.", "")
+            result.push("  No such command.", " ")
             terminal.log(...result)
             return
         }
@@ -34,7 +34,7 @@ Commander
         if (command.description !== undefined) {
             result.push("Description:")
             result.push(`  ${command.description}`)
-            result.push("")
+            result.push(" ")
         }
         if (is_non_empty_object(command.params)) {
             result.push("Params:")
@@ -48,7 +48,7 @@ Commander
                 }
                 result.push(line)
             }
-            result.push("")
+            result.push(" ")
         }
         if (is_non_empty_object(command.options)) {
             result.push("Options:")
@@ -66,11 +66,11 @@ Commander
                 }
                 result.push(line)
             }
-            result.push("")
+            result.push(" ")
         }
         if (result.length === 0) {
             result.push("No description, no parama, no options, nothing.")
-            result.push("")
+            result.push(" ")
         }
         terminal.log(...result)
     })

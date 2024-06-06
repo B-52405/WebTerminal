@@ -47,12 +47,12 @@ class Clause {
 
     Click(click) {
         this.click = click
-        if(this.click === undefined){
-            if(this.style["cursor"] === "pointer"){
+        if (this.click === undefined) {
+            if (this.style["cursor"] === "pointer") {
                 delete this.style["cursor"]
             }
         }
-        else{
+        else {
             this.style["cursor"] = "pointer"
         }
         return this
@@ -82,20 +82,21 @@ class Clause {
         return result
     }
 
-    warning(text) {
-        this.text = text
-        this.style = { color: COLORS.ORANGR }
+    Button(action) {
+        this.style["color"] = COLORS.BUTTON
+        this.style["cursor"] = "pointer"
+        this.click = action
         return this
     }
 
-    error(text) {
-        this.text = text
-        this.style = { color: COLORS.RED }
+    Warning() {
+        this.style["color"] = COLORS.WARNING
         return this
     }
 
-    red() {
-        this.style["color"] = COLORS.RED
+    Error() {
+        this.style["color"] = COLORS.ERROR
+        return this
     }
 }
 

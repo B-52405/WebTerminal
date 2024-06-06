@@ -38,7 +38,7 @@ class Commander {
         }
         const command_object = this.commands[command_split[0]]
         if (command_object === undefined) {
-            terminal.log("", "  No such command.", "  Try 'help' for assistance.", "")
+            terminal.log(" ", "  No such command.", "  Try 'help' for assistance.", " ")
         }
         else {
             await command_object.call(command_split.slice(1))
@@ -138,7 +138,7 @@ class Command {
             }
             else {
                 if (param_count === this.#param_index.length) {
-                    terminal.log("", "  error: too many parameters", "")
+                    terminal.log(" ", "  error: too many parameters", " ")
                     return
                 }
                 else {
@@ -149,7 +149,15 @@ class Command {
             }
         }
 
-        await this.#action(...args)
+        try {
+            await this.#action(...args)
+        }
+        catch (error) {
+            console.log(error)
+            terminal.log("  Uncaught error while execute command.")
+            terminal.log("  More details in the console.")
+            terminal.log(" ")
+        }
     }
 }
 

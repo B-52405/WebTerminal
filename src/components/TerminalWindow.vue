@@ -4,7 +4,7 @@ import { Clause } from "../utils/clause"
 import { Commander } from "../utils/commander"
 import { is_non_empty_array } from "../utils/checker"
 import { COLORS, CHAR_WIDTH } from "../utils/statics"
-import { init_terminal, terminal } from "../utils/terminal"
+import { terminal } from "../utils/terminal"
 
 export default {
     expose: [
@@ -31,9 +31,9 @@ export default {
             setting: {
                 prompt: "WebTerminal> ",
                 prompt_visibility: true,
-                logging_interval: 24,
                 background_color: COLORS.GRAY,
-                font_color: COLORS.WHITE
+                font_color: COLORS.WHITE,
+                logging_interval: 24
             },
 
             terminal_width: undefined,
@@ -49,7 +49,7 @@ export default {
                     if (clause instanceof Clause) {
                         result.push(clause)
                     }
-                    else if(typeof clause === "string"){
+                    else if (typeof clause === "string") {
                         result.push(new Clause(clause))
                     }
                     else {
@@ -126,6 +126,11 @@ export default {
             return await new Promise(resolver => {
                 this.input_resolver = resolver
             })
+        },
+        clear() {
+            this.log_lines = []
+            this.log_buffer = []
+            this.reset()
         },
         history(event) {
             if (event.key === "ArrowUp") {
@@ -250,7 +255,19 @@ export default {
             }
         })
         this.resize_observer.observe(this.$refs.terminal_window)
-        init_terminal(this.setting, this.input, this.log_to_buffer, this.logging_finish)
+
+        terminal.setting = this.setting
+        terminal.input = this.input
+        terminal.log = this.log_to_buffer
+        terminal.finish = this.logging_finish
+        terminal.clear = this.clear
+        if(is_non_empty_array(terminal.banner)){
+            this.logging = true
+            this.log_to_buffer(...terminal.banner)
+            this.logging_finish()
+        }
+        terminal.mounted()
+
         this.focus()
         this.buffer_to_log()
 

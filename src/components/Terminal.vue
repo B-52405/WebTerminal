@@ -1,5 +1,6 @@
 <script>
 import TerminalWindow from "./TerminalWindow.vue"
+import { } from "../commands/clear"
 import { } from "../commands/color"
 import { } from "../commands/help"
 
