@@ -6,9 +6,10 @@ const terminal = {
         prompt_visibility: undefined,
         background_color: undefined,
         font_color: undefined,
-        logging_interval: undefined
+        logging_interval: undefined,
+        timeout: undefined
     },
-    input: (prompt) => undefined,
+    input: (prompt, hidden) => undefined,
     log: console.log,
     finish: () => { },
     clear: () => { },
@@ -19,25 +20,25 @@ const terminal = {
 const terminal_proxy = new Proxy(terminal, {
     set(target, property, value, receiver) {
 
-        if(property === "setting"){
+        if (property === "setting") {
             const setting = target["setting"]
-            for(const name in setting){
-                if(setting[name] !== undefined){
+            for (const name in setting) {
+                if (setting[name] !== undefined) {
                     value[name] = setting[name]
                 }
             }
         }
-        else if(["input", "log", "finish", "clear", "mounted"].includes(property)){
-            if(typeof value !== "function"){
+        else if (["input", "log", "finish", "clear", "mounted"].includes(property)) {
+            if (typeof value !== "function") {
                 return false
             }
         }
-        else if(property === "banner"){
-            if(!is_iterable(value)){
+        else if (property === "banner") {
+            if (!is_iterable(value)) {
                 return false
             }
         }
-        else{
+        else {
             return false
         }
 

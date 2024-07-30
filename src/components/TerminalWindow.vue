@@ -21,19 +21,23 @@ export default {
             log_resolvers: [],
             inputting: false,
             input_prompt: "",
+            input_visibility: true,
             input_resolver: () => undefined,
+            input_resolvers: [],
             cursor_index: 0,
             command: "",
             command_history: [],
             command_history_index: -1,
             complete_command: [],
             complete_index: -1,
+            logout_interval: undefined,
             setting: {
                 prompt: "WebTerminal> ",
                 prompt_visibility: true,
                 background_color: COLORS.GRAY,
                 font_color: COLORS.WHITE,
-                logging_interval: 24
+                logging_interval: 24,
+                timeout: 300000
             },
 
             terminal_width: undefined,
@@ -75,14 +79,14 @@ export default {
         buffer_to_log() {
             if (this.log_buffer.length > 0) {
                 this.log_lines.push(this.log_buffer.shift())
-                this.scroll_to_bottom()
+                this.scroll_to_bottom
                 setTimeout(this.buffer_to_log, this.setting.logging_interval)
             }
             else {
-                if (this.log_resolvers.length > 0) {
+                while (this.log_resolvers.length > 0) {
                     this.log_resolvers.shift()()
                 }
-                setTimeout(this.buffer_to_log, 1)
+                setTimeout(this.buffer_to_log)
             }
         },
         async await_logging() {
@@ -90,9 +94,19 @@ export default {
                 this.log_resolvers.push(resolver)
             })
         },
+        async await_inputting() {
+            if (this.inputting){
+                await new Promise(resolver => {
+                    this.input_resolvers.push(resolver)
+                })
+            }
+        },
         async logging_finish() {
             await this.await_logging()
+            await this.await_inputting()
+
             this.logging = false
+            this.scroll_to_bottom()
         },
         enter() {
             if (this.logging) {
@@ -106,22 +120,27 @@ export default {
                 this.inputting = false
                 this.input_prompt = ""
                 this.input_resolver = () => undefined
-                this.$nextTick(this.reset)
+                while (this.input_resolvers.length > 0) {
+                    this.input_resolvers.shift()()
+                }
+                this.$nextTick(this.reset_inputting_state)
             }
             else {
                 this.logging = true
                 terminal.log(this.command_line)
                 this.command_history.unshift(this.command)
                 Commander.execute(this.command)
-                this.$nextTick(this.reset)
+                this.$nextTick(this.reset_inputting_state)
             }
         },
-        async input(prompt) {
+        async input(prompt, hidden) {
             await this.await_logging()
             this.inputting = true
             this.input_prompt = prompt
+            this.input_visibility = !hidden
 
-            this.reset()
+            this.reset_inputting_state()
+            this.$nextTick(this.scroll_to_bottom)
 
             return await new Promise(resolver => {
                 this.input_resolver = resolver
@@ -130,7 +149,7 @@ export default {
         clear() {
             this.log_lines = []
             this.log_buffer = []
-            this.reset()
+            this.reset_inputting_state()
         },
         history(event) {
             if (event.key === "ArrowUp") {
@@ -174,13 +193,14 @@ export default {
                 this.cursor_index = 0
             })
         },
-        reset() {
+        reset_inputting_state() {
             this.command = ""
             this.cursor_index = 0
             this.command_history_index = -1
             this.complete_index = -1
         },
         keydown(event) {
+            this.reset_timeout()
             if (event.key !== "Tab") {
                 this.complete_command = []
                 this.complete_index = -1
@@ -209,9 +229,16 @@ export default {
                 }
             }
 
+            this.reset_timeout()
             this.$nextTick(() => {
                 this.$refs.terminal_input.focus()
             })
+        },
+        reset_timeout() {
+            clearInterval(this.logout_interval)
+            this.logout_interval = setInterval(() => {
+                location.reload()
+            }, terminal.setting.timeout)
         }
     },
     watch: {
@@ -240,7 +267,11 @@ export default {
         },
         input_line() {
             const prompt = this.to_log_line(this.to_log_line(this.input_prompt))
-            return [...prompt, new Clause(this.command)]
+            let command = this.command
+            if (!this.input_visibility) {
+                command = "*".repeat(command.length)
+            }
+            return [...prompt, new Clause(command)]
         }
     },
     mounted() {
@@ -261,7 +292,7 @@ export default {
         terminal.log = this.log_to_buffer
         terminal.finish = this.logging_finish
         terminal.clear = this.clear
-        if(is_non_empty_array(terminal.banner)){
+        if (is_non_empty_array(terminal.banner)) {
             this.logging = true
             this.log_to_buffer(...terminal.banner)
             this.logging_finish()
@@ -271,7 +302,7 @@ export default {
         this.focus()
         this.buffer_to_log()
 
-        // window.terminal_window = this
+        window.terminal_window = this
     }
 }
 </script>

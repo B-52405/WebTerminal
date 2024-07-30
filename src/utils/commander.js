@@ -154,6 +154,7 @@ class Command {
         }
         catch (error) {
             console.log(error)
+            terminal.log(" ")
             terminal.log("  Uncaught error while execute command.")
             terminal.log("  More details in the console.")
             terminal.log(" ")

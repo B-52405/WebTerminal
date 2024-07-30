@@ -62,7 +62,7 @@ createApp(Terminal).mount('#web_terminal_app')
     <div id="web_terminal_app"></div>
     <script type="module">
         import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js'
-        import { Terminal, Commander } from 'https://unpkg.com/@b52405/webterminal/dist/webterminal.es.js'
+        import { Terminal, Commander, terminal } from 'https://unpkg.com/@b52405/webterminal/dist/webterminal.es.js'
 
         Commander
             .Command("hello")
@@ -70,8 +70,10 @@ createApp(Terminal).mount('#web_terminal_app')
             .Param({ name: "ending", type: "String", default: "!", description: "Punctuation." })
             .Option({ name: "hide", type: "Boolean", short: "h", description: "Whether to display punctuation marks." })
             .Action(async (ending, hide) => {
-                const name = await terminal.input("name: ")
-                terminal.log(`hello ${name}${hide ? "" : ending}`)
+                terminal.log(" ")
+                const name = await terminal.input("  name: ")
+                terminal.log(`  hello ${name}${hide ? "" : ending}`)
+                terminal.log(" ")
             })
 
         createApp(Terminal).mount("#web_terminal_app")
@@ -239,6 +241,7 @@ function example_command_action2() {
 * logging_interval：打印每一行的时间间隔，单位：ms
 * mounted：终端加载后自动调用的回调函数
 * banner: 终端加载后自动打印的内容
+* timeout: 无操作一段时间后自动登出，单位：ms
 
 ### 设置终端
 
@@ -252,6 +255,7 @@ terminal.setting.font_color = "white"
 terminal.setting.logging_interval = 24
 terminal.setting.mounted = () => { console.log("Terminal is ready.") }
 terminal.setting.banner = ["Welcome to WebTerminal.", " "]
+terminal.setting.timeout = 300000
 ```
 
 # 读取用户输入
@@ -267,6 +271,9 @@ async function example_command_action() {
     //终端会另起一行，显示"input message: "并等待用户输入
     //用户的输入会以string的形式返回
     const message = await terminal.input("input message: ")
+
+    //将第二个参数设置为true可以隐藏用户输入内容
+    const secret = await terminal.input("secret message: ", true)
 
     terminal.log(message)
 }

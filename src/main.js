@@ -9,7 +9,8 @@ Commander
     .Action(async (ending, hide) => {
         terminal.log(" ")
         const name = await terminal.input("  name: ")
-        terminal.log(`  hello ${name}${hide ? "" : ending}`, " ")
+        terminal.log(`  hello ${name}${hide ? "" : ending}`)
+        terminal.log(" ")
     })
 
 createApp(Terminal).mount("#web_terminal_app")

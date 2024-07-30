@@ -95,10 +95,6 @@ export default {
     display: inline-block;
 }
 
-/* .clickable {
-    
-} */
-
 .cursor {
     animation: blink 1s infinite;
 }
